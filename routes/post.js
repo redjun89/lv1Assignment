@@ -63,3 +63,5 @@ router.delete("/:id", async (req, res) => {
 router.get("/:id/comments", async (req, res) => {
   const post = await postSchema.findById(req.params.id)
 });
+
+module.exports = router;
