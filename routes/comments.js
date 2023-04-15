@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+
 const commentSchema = require('../schemas/comment');
 
 // 댓글 목록 조회 API
-router.get('/', async (req, res) => {
+router.get('/posts/:_postId/comments', async (req, res) => {
   try {
     const comments = await commentSchema.find({ postId: req.params.postId })
       .sort({ createdAt: -1 })
@@ -16,7 +17,7 @@ router.get('/', async (req, res) => {
 });
 
 // 댓글 작성 API
-router.post('/', async (req, res) => {
+router.post('/posts/:_postId/comments', async (req, res) => {
   try {
     const { content, password } = req.body;
     if (!content) {
@@ -36,7 +37,7 @@ router.post('/', async (req, res) => {
 });
 
 // 댓글 수정 API
-router.put('/:commentId', async (req, res) => {
+router.put('/posts/:_postId/comments/:_commentId', async (req, res) => {
   try {
     const { content, password } = req.body;
     if (!content) {
@@ -59,7 +60,7 @@ router.put('/:commentId', async (req, res) => {
 });
 
 // 댓글 삭제 API
-router.delete('/:commentId', async (req, res) => {
+router.delete('/posts/:_postId/comments/:_commentId', async (req, res) => {
   try {
     const comment = await commentSchema.findById(req.params.commentId);
     if (!comment) {

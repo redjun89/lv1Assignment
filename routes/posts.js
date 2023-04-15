@@ -12,26 +12,38 @@ router.get("/", async (req, res) => {
 });
 
 // 게시글 작성 API
-router.post("/", async (req, res) => {
+router.post("/posts", async (req, res) => {
+  const { user, password, title, content } = req.body;
   const post = new postSchema({
-    title: req.body.title,
-    author: req.body.author,
-    password: req.body.password,
-    content: req.body.content,
+    user,
+    password,
+    title,
+    content,
   });
 
-  const result = await post.save();
-  res.json(result);
+  if (!title || !content) {
+    return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
+  }
+
+  await post.save();
+
+  res.json({ message: '게시글을 생성하였습니다.' });
 });
 
 // 게시글 조회 API
-router.get("/:id", async (req, res) => {
+router.get("/posts", async (req, res) => {
   const post = await postSchema.findById(req.params.id);
   res.json(post);
 });
 
+// 게시글 상세 조회 API
+router.get("/posts/:_postId", async (req, res) => {
+    const post = await postSchema.findById(req.params.id);
+    res.json(post);
+  });
+
 // 게시글 수정 API
-router.put("/:id", async (req, res) => {
+router.put("/posts/:_postId", async (req, res) => {
   const post = await postSchema.findById(req.params.id);
 
   if (post.password === req.body.password) {
@@ -48,7 +60,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // 게시글 삭제 API
-router.delete("/:id", async (req, res) => {
+router.delete("/posts/:_postId", async (req, res) => {
   const post = await postSchema.findById(req.params.id);
 
   if (post.password === req.body.password) {
