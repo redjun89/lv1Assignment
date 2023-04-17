@@ -15,6 +15,7 @@ const Comment = require('./comment');
 
 module.exports = {
   Post,
-  Comment,
-  connect
+  Comment
 };
+
+module.exports = connect;

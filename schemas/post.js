@@ -7,7 +7,7 @@ const PostSchema = new Schema({
         type: Schema.Types.ObjectId, // ObjectId로 변경
         required: true,
         unique: true,
-        default: () => mongoose.Types.ObjectId() // default 값으로 ObjectId 생성
+        default: () => new mongoose.Types.ObjectId() // default 값으로 ObjectId 생성
     },
     user: {
         type: String,
@@ -30,12 +30,12 @@ const PostSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    comments: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'comments'
-        }
-    ]
+    // comments: [
+    //     {
+    //         type: Schema.Types.ObjectId,
+    //         ref: 'comments'
+    //     }
+    // ]
 });
 
 module.exports = Post = mongoose.model('posts', PostSchema);
