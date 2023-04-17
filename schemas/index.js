@@ -1,17 +1,13 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/myapp', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true
-});
+const connect = () => {
+  mongoose
+  .connect("mongodb://127.0.0.1:27017/crud_assignment")
+    .catch(err => console.log(err));
+};
 
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('Connected to MongoDB');
+mongoose.connection.on("error", err => {
+  console.error("몽고디비 연결 에러", err);
 });
 
 const Post = require('./post');
@@ -19,5 +15,6 @@ const Comment = require('./comment');
 
 module.exports = {
   Post,
-  Comment
+  Comment,
+  connect
 };
