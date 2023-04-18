@@ -7,7 +7,7 @@ const postSchema = require("../schemas/post");
 
 // 전체 게시글 목록 조회 API
 router.get("/posts", async (req, res) => {
-  const posts = await postSchema.find().sort("-createdAt");
+  const posts = await postSchema.find({}).sort("-createdAt");
   const formattedPosts = posts.map((post) => {
     const { postId, user, title, createdAt } = post;
     return { postId, user, title, createdAt };
