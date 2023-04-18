@@ -6,10 +6,18 @@ const router = express.Router();
 const postSchema = require("../schemas/post");
 
 // 전체 게시글 목록 조회 API
-router.get("/", async (req, res) => {
+router.get("/posts", async (req, res) => {
   const posts = await postSchema.find().sort("-createdAt");
-  res.json(posts);
+  const formattedPosts = posts.map((post) => {
+    const { postId, user, title, createdAt } = post;
+    return { postId, user, title, createdAt };
+  });
+  res.json({ data: formattedPosts });
 });
+// router.get("/", async (req, res) => {
+//   const posts = await postSchema.find().sort("-createdAt");
+//   res.json(posts);
+// });
 
 // 게시글 작성 API
 router.post("/posts", async (req, res) => {
@@ -32,16 +40,6 @@ router.post("/posts", async (req, res) => {
     console.error(err);
     res.status(500).json({ message: '서버 에러 발생' });
   }
-});
-
-// 게시글 조회 API
-router.get("/posts", async (req, res) => {
-  const posts = await postSchema.find({});
-  const formattedPosts = posts.map((post) => {
-    const { postId, user, title, createdAt } = post;
-    return { postId, user, title, createdAt };
-  });
-  res.json({ data: formattedPosts });
 });
 
 // 게시글 상세 조회 API
@@ -98,7 +96,6 @@ router.put("/posts/:_postId", async (req, res) => {
 router.delete("/posts/:_postId", async (req, res) => {
   try {
     const post = await postSchema.findById(req.params._postId);
-    console.log(post);
 
     if (!post) {
       return res.status(404).json({ message: '해당 ID에 해당하는 게시물을 찾을 수 없습니다.' });
@@ -121,8 +118,8 @@ router.delete("/posts/:_postId", async (req, res) => {
 });
 
 // 댓글 목록 조회
-router.get("/:id/comments", async (req, res) => {
-  const post = await postSchema.findById(req.params.id)
-});
+// router.get("/:id/comments", async (req, res) => {
+//   const post = await postSchema.findById(req.params.id)
+// });
 
 module.exports = router;

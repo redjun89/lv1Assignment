@@ -12,7 +12,6 @@ const PostSchema = new Schema({
     user: {
         type: String,
         required: true,
-        unique: true
     },
     password: {
         type: String,
