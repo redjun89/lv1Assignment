@@ -5,10 +5,10 @@ const router = express.Router();
 
 const posts = require("./posts");
 const comments = require("./comments");
-const users = require("./users");
-const auth = require("./auth");
+const signup = require("./signup");
+const login = require("./login");
 
 
-router.use("/", [posts, comments, users, auth]);
+router.use("/", [posts, comments, signup, login]);
 
 module.exports = router;
