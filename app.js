@@ -3,10 +3,11 @@ const app = express();
 const port = 3000;
 
 const routes = require("./routes/index.js");
-const connect = require("./schemas")
+const connect = require("./schemas");
 connect();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use("/", routes);
 
 app.listen(port, () => {
