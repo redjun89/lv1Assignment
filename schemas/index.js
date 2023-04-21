@@ -16,7 +16,8 @@ const Signup = require('./signup');
 
 module.exports = {
   Post,
-  Comment
+  Comment,
+  Signup,
 };
 
 module.exports = connect;
