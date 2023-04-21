@@ -6,8 +6,9 @@ const router = express.Router();
 const posts = require("./posts");
 const comments = require("./comments");
 const users = require("./users");
+const auth = require("./auth");
 
 
-router.use("/", [posts, comments, users]);
+router.use("/", [posts, comments, users, auth]);
 
 module.exports = router;
