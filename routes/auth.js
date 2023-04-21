@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
 
-const User = require("../schemas/user");
+const User = require("../schemas/signup");
 
 // 로그인 API
 router.post("/auth", async (req, res) => {

@@ -1,11 +1,6 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
-  email: { // email 필드
-    type: String,
-    required: true,
-    unique: true,
-  },
   nickname: { // nickname 필드
     type: String,
     required: true,

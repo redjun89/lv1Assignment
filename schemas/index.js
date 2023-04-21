@@ -12,6 +12,7 @@ mongoose.connection.on("error", err => {
 
 const Post = require('./post');
 const Comment = require('./comment');
+const Signup = require('./signup');
 
 module.exports = {
   Post,
