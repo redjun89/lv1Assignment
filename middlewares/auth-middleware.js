@@ -1,7 +1,7 @@
 // middlewares/auth-middleware.js
 
 const jwt = require("jsonwebtoken");
-const User = require("../schemas/user");
+const User = require("../schemas/signup");
 
 // 사용자 인증 미들웨어
 module.exports = async (req, res, next) => {
@@ -9,8 +9,8 @@ module.exports = async (req, res, next) => {
   const [authType, authToken] = (Authorization ?? "").split(" ");
 
   if (!authToken || authType !== "Bearer") {
-    res.status(401).send({
-      errorMessage: "로그인 후 이용 가능한 기능입니다.",
+    res.status(403).send({
+      errorMessage: "쿠키에서 오류가 발생하였습니다.",
     });
     return;
   }
@@ -22,8 +22,8 @@ module.exports = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    res.status(401).send({
-      errorMessage: "로그인 후 이용 가능한 기능입니다.",
+    res.status(403).send({
+      errorMessage: "로그인이 필요한 기능입니다.",
     });
   }
 };

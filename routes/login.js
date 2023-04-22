@@ -6,6 +6,7 @@ const router = express.Router();
 
 const User = require("../schemas/signup");
 
+
 // 로그인 API
 router.post("/login", async (req, res) => {
   try {
@@ -22,11 +23,15 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user.userId },
-      "custom-secret-key",
+      { userId: user.userId },  // token의 payload에 저장
+      "customized-secret-key",
+      {expiresIn: "1h"}
     );
-
-    res.cookie("Authorization", `Bearer ${token}`); // JWT를 Cookie로 할당합니다!
+    
+    res.cookie(
+      "Authorization", 
+      `Bearer ${token}`,
+      ); // JWT를 Cookie로 할당합니다!
     res.status(200).json({ token }); // JWT를 Body로 할당합니다!
   } catch (err) {
     res.status(400).json({
