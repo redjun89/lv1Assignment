@@ -27,9 +27,14 @@ router.post("/posts", authMiddleware, async (req, res) => {
     const { title, content, createdAt, updatedAt } = req.body;
     const { userId, nickname } = res.locals.user;
 
-    if (!title || !content) {
-      return res.status(412).json({ message: '데이터 형식이 올바르지 않습니다.' });
+    if (!title) {
+      return res.status(412).json({ message: '제목을 입력해주세요.' });
     }
+
+    if (!title || !content) {
+      return res.status(412).json({ message: '내용을 입력해주세요.' });
+    }
+
     const post = new postSchema({  // Post 객체 생성
       userId,
       nickname,
@@ -39,7 +44,8 @@ router.post("/posts", authMiddleware, async (req, res) => {
       updatedAt
     });
 
-    await post.save();
+    const result = await post.save();
+    result.json(result);
     res.json({ message: '게시글을 생성하였습니다.' });
   } catch (err) {
     console.error(err);
@@ -50,18 +56,13 @@ router.post("/posts", authMiddleware, async (req, res) => {
 // 게시글 상세 조회 API
 router.get("/posts/:_postId", async (req, res) => {
   try {
-    if (!req.params._postId) {
-      return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
-    }
-
     const post = await postSchema.findById(req.params._postId);
-    console.log(post);
+    const { postId, userId, nickname, title, content, createdAt, updatedAt } = post;
 
-    if (!post) {
-      return res.status(404).json({ message: '해당 ID에 해당하는 게시물을 찾을 수 없습니다.' });
+    if (!req.params._postId || !post) {
+      return res.status(400).json({ message: '게시글 조회에 실패하였습니다.' });
     }
 
-    const { postId, userId, nickname, title, content, createdAt, updatedAt } = post;
     res.json({ post: { postId, userId, nickname, title, content, createdAt, updatedAt } });
   } catch (error) {
     console.error(error);
@@ -76,12 +77,8 @@ router.put("/posts/:_postId", authMiddleware, async (req, res) => {
     const posts = await postSchema.findById(req.params._postId);
     const { userId } = res.locals.user;
 
-    if (!req.params._postId) {
-      return res.status(412).json({ message: '데이터 형식이 올바르지 않습니다.' });
-    }
-
-    if (!posts) {
-      return res.status(403).json({ message: '게시글 조회에 실패하였습니다.' });
+    if (!req.params._postId || !posts) {
+      return res.status(412).json({ message: '게시글 조회에 실패하였습니다.' });
     }
 
     if (userId === posts.userId) {
@@ -122,10 +119,5 @@ router.delete("/posts/:_postId", authMiddleware, async (req, res) => {
     res.status(400).json({ message: '게시글 삭제에 실패하였습니다.' });
   }
 });
-
-// 댓글 목록 조회
-// router.get("/:id/comments", async (req, res) => {
-//   const post = await postSchema.findById(req.params.id)
-// });
 
 module.exports = router;
