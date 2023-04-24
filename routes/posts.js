@@ -9,8 +9,8 @@ const authMiddleware = require("../middlewares/auth-middleware");
 router.get("/posts", async (req, res) => {
   const posts = await postSchema.find({}).sort("-createdAt");
   const formattedPosts = posts.map((post) => {
-    const { title, nickname, createdAt } = post;
-    return { title, nickname, createdAt };
+    const { postId, userId, nickname, title, createdAt, updatedAt } = post;
+    return { postId, userId, nickname, title, createdAt, updatedAt };
   });
 
   try {
