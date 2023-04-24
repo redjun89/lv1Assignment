@@ -10,7 +10,7 @@ module.exports = async (req, res, next) => {
 
   if (!authToken || authType !== "Bearer") {
     res.status(403).send({
-      errorMessage: "쿠키에서 오류가 발생하였습니다.",
+      errorMessage: "로그인이 필요한 기능입니다.",
     });
     return;
   }
@@ -23,7 +23,7 @@ module.exports = async (req, res, next) => {
   } catch (err) {
     console.error(err);
     res.status(403).send({
-      errorMessage: "로그인이 필요한 기능입니다.",
+      errorMessage: "쿠키에서 오류가 발생했습니다.",
     });
   }
 };

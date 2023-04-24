@@ -9,13 +9,9 @@ const PostSchema = new Schema({
     //     unique: true,
     //     default: () => new mongoose.Types.ObjectId() // default 값으로 ObjectId 생성
     // },
-    user: {
+    nickname: {
         type: String,
         required: true,
-    },
-    password: {
-        type: String,
-        required: true
     },
     title: {
         type: String,
@@ -26,6 +22,10 @@ const PostSchema = new Schema({
         required: true
     },
     createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
         type: Date,
         default: Date.now
     },
