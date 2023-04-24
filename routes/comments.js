@@ -9,10 +9,6 @@ router.get('/posts/:_postId/comments', async (req, res) => {
   try {
     const comments = await commentSchema.find().sort("-createdAt");
 
-    if (!comments || !req.params) {
-      return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
-    }
-
     const formattedComments = comments.map((comments) => {
       const { commentId, userId, nickname, comment, createdAt, updatedAt } = comments;
       return { commentId, userId, nickname, comment, createdAt, updatedAt };
@@ -28,11 +24,13 @@ router.post('/posts/:_postId/comments', authMiddleware, async (req, res) => {
   try {
     const { comment, createdAt, updatedAt } = req.body;
     const { userId, nickname } = res.locals.user;
+
     if (!comment) {
       return res.status(401).json({ message: '댓글 내용을 입력해주세요.' });
     }
+
     if (!req.params) {
-      return res.status(402).json({ message: '데이터 형식이 올바르지 않습니다.' });
+      return res.status(402).json({ message: '게시물 조회에 실패하였습니다.' });
     }
     const newComment = new commentSchema({
       userId,
@@ -63,9 +61,6 @@ router.put('/posts/:_postId/comments/:_commentId', authMiddleware, async (req, r
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
     }
 
-    if (!req.body || !req.params) {
-      return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
-    }
     if (userId === comments.userId) {
       comments.comment = comment;
 
@@ -87,10 +82,6 @@ router.delete('/posts/:_postId/comments/:_commentId', authMiddleware, async (req
 
     if (!comments) {
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
-    }
-
-    if (!req.body || !req.params) {
-      return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
     }
 
     if (userId === comments.userId) {
