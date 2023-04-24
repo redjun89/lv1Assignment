@@ -10,22 +10,27 @@ const CommentSchema = new Schema({
     //     ref: 'posts',
     //     default: () => new mongoose.Types.ObjectId()
     // },
-    user: {
+    userId: {
         type: String,
         required: true
     },
-    password: {
+    nickname: {
         type: String,
         required: true
     },
-    content: {
+    comment: {
         type: String,
         required: true
     },
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    },
+    
 });
 
 // 가상의 userId 값을 할당
