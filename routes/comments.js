@@ -52,19 +52,28 @@ router.post('/posts/:_postId/comments', authMiddleware, async (req, res) => {
 router.put('/posts/:_postId/comments/:_commentId', authMiddleware, async (req, res) => {
   try {
     const { comment } = req.body;
+    const comments = await commentSchema.findById(req.params._commentId);
+    const { userId } = res.locals.user;
+
     if (!comment) {
       return res.status(400).json({ message: '댓글 내용을 입력해주세요' });
     }
-    const comments = await commentSchema.findById(req.params._commentId);
+
     if (!comments) {
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
     }
+
     if (!req.body || !req.params) {
       return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
     }
-    comments.comment = comment;
-    await comments.save();
-    res.json({ message: '댓글을 수정하였습니다.' });
+    if (userId === comments.userId) {
+      comments.comment = comment;
+
+      await comments.save();
+      res.json({ message: '댓글을 수정하였습니다.' });
+    } else {
+      res.status(403).json({ errorMessage: "댓글 수정 권한이 없습니다." });
+    }
   } catch (err) {
     res.status(400).json({ errorMessage: '서버 에러' });
   }
@@ -73,16 +82,22 @@ router.put('/posts/:_postId/comments/:_commentId', authMiddleware, async (req, r
 // 댓글 삭제 API
 router.delete('/posts/:_postId/comments/:_commentId', authMiddleware, async (req, res) => {
   try {
-    const comment = await commentSchema.findById(req.params._commentId);
-    if (!comment) {
+    const comments = await commentSchema.findById(req.params._commentId);
+    const { userId } = res.locals.user;
+
+    if (!comments) {
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
     }
+
     if (!req.body || !req.params) {
       return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
     }
-    if (comment) {
-      await commentSchema.deleteOne({ commentId: comment._commentId });
+
+    if (userId === comments.userId) {
+      await commentSchema.deleteOne({ commentId: comments._commentId });
       res.json({ message: '댓글을 삭제하였습니다.' });
+    } else {
+      res.status(401).json({ error: "댓글 삭제 권한이 없습니다." });
     }
   } catch (err) {
     res.status(400).json({ errorMessage: '서버 에러' });

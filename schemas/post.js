@@ -9,6 +9,10 @@ const PostSchema = new Schema({
     //     unique: true,
     //     default: () => new mongoose.Types.ObjectId() // default 값으로 ObjectId 생성
     // },
+    userId: {
+        type: String,
+        required: true,
+    },
     nickname: {
         type: String,
         required: true,

@@ -10,7 +10,6 @@ router.post("/signup", async (req, res) => {
 try {
   const { nickname, password, confirm } = req.body;
   const nickPattern = new RegExp('^[a-zA-Z0-9]{3,}$');
-  console.log(nickPattern.test(nickname));
 
   if (!nickPattern.test(nickname)) {
     res.status(412).json({
