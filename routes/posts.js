@@ -44,8 +44,7 @@ router.post("/posts", authMiddleware, async (req, res) => {
       updatedAt
     });
 
-    const result = await post.save();
-    result.json(result);
+    await post.save();
     res.json({ message: '게시글을 생성하였습니다.' });
   } catch (err) {
     console.error(err);
@@ -85,8 +84,7 @@ router.put("/posts/:_postId", authMiddleware, async (req, res) => {
       posts.title = title;
       posts.content = content;
 
-      const result = await posts.save();
-      res.json(result);
+      await posts.save();
       res.status(200).json({ message: '게시글 수정이 완료되었습니다.' });
     } else {
       res.status(403).json({ errorMessage: "게시글 수정 권한이 없습니다." });
