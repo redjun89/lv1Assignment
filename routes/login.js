@@ -32,7 +32,7 @@ router.post("/login", async (req, res) => {
       "Authorization", 
       `Bearer ${token}`,
       ); // JWT를 Cookie로 할당합니다!
-    res.status(200).json({ token }); // JWT를 Body로 할당합니다!
+    res.status(200).json({ message : "로그인에 성공했습니다." }); // JWT를 Body로 할당합니다!
   } catch (err) {
     res.status(400).json({
       errorMessage: "로그인에 실패했습니다."
