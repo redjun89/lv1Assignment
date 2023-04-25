@@ -1,11 +1,9 @@
 const express = require("express");
-const app = express();
-const port = 3000;
-
 const cookieParser = require("cookie-parser");
-
 const routes = require("./routes/index.js");
 const connect = require("./schemas");
+const app = express();
+const port = 3000;
 connect();
 
 app.use(express.json());
