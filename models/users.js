@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Users extends Model {
+  class users extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,30 +11,30 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       
       // 1. Users 모델에서
-      this.hasMany(models.Posts, { // 2. Posts 모델에게 1:N 관계 설정을 합니다.
+      this.hasMany(models.posts, { // 2. Posts 모델에게 1:N 관계 설정을 합니다.
         sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
-        foreignKey: 'UserId', // 4. Posts 모델의 UserId 컬럼과 연결합니다.
+        foreignKey: 'userId', // 4. Posts 모델의 UserId 컬럼과 연결합니다.
       });
 
-      this.hasMany(models.Posts, { // 2. Posts 모델에게 1:N 관계 설정을 합니다.
+      this.hasMany(models.posts, { // 2. Posts 모델에게 1:N 관계 설정을 합니다.
         sourceKey: 'nickname', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'nickname', // 4. Posts 모델의 UserId 컬럼과 연결합니다.
       });
 
       // 1. Users 모델에서
-      this.hasMany(models.Comments, { // 2. Comments 모델에게 1:N 관계 설정을 합니다.
+      this.hasMany(models.comments, { // 2. Comments 모델에게 1:N 관계 설정을 합니다.
         sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
-        foreignKey: 'UserId', // 4. Comments 모델의 UserId 컬럼과 연결합니다.
+        foreignKey: 'userId', // 4. Comments 모델의 UserId 컬럼과 연결합니다.
       });
 
-      this.hasMany(models.Comments, { // 2. Comments 모델에게 1:N 관계 설정을 합니다.
+      this.hasMany(models.comments, { // 2. Comments 모델에게 1:N 관계 설정을 합니다.
         sourceKey: 'nickname', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'nickname', // 4. Comments 모델의 UserId 컬럼과 연결합니다.
       });
     }
   }
 
-  Users.init(
+  users.init(
     {
       userId: {
         allowNull: false, // NOT NULL
@@ -54,8 +54,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Users',
+      modelName: 'users',
     }
   );
-  return Users;
+  return users;
 };
