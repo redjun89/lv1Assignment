@@ -3,8 +3,7 @@
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
-
-const User = require("../schemas/signup");
+const { users } = require("../models")
 
 
 // 로그인 API
@@ -12,7 +11,7 @@ router.post("/login", async (req, res) => {
   try {
     const { nickname, password } = req.body;
 
-    const user = await User.findOne({ nickname, password });
+    const user = await users.findOne({ nickname, password });
 
     // NOTE: 인증 메세지는 자세히 설명하지 않는것을 원칙으로 한다.
     if (!user || password !== user.password) {
