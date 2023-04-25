@@ -1,26 +1,25 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-
-const commentSchema = require('../schemas/comment');
 const authMiddleware = require("../middlewares/auth-middleware");
+const { comments } = require("../models");
+const { Op } = require("sequelize");
 
 // 댓글 목록 조회 API
-router.get('/posts/:_postId/comments', async (req, res) => {
+router.get('/posts/:postId/comments', async (req, res) => {
   try {
-    const comments = await commentSchema.find().sort("-createdAt");
-
-    const formattedComments = comments.map((comments) => {
-      const { commentId, userId, nickname, comment, createdAt, updatedAt } = comments;
-      return { commentId, userId, nickname, comment, createdAt, updatedAt };
+    const Comments = await comments.findAll({
+      attributes: [ commentId, userId, nickname, comment, createdAt, updatedAt ],
+      order: [['createdAt', 'DESC']]
     });
-    res.json({ conmments: formattedComments });
+
+    res.json({ conmments: Comments });
   } catch (err) {
     res.status(400).json({ errorMessage: '서버 에러' });
   }
 });
 
 // 댓글 작성 API
-router.post('/posts/:_postId/comments', authMiddleware, async (req, res) => {
+router.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
   try {
     const { comment, createdAt, updatedAt } = req.body;
     const { userId, nickname } = res.locals.user;
@@ -32,14 +31,14 @@ router.post('/posts/:_postId/comments', authMiddleware, async (req, res) => {
     if (!req.params) {
       return res.status(402).json({ message: '게시물 조회에 실패하였습니다.' });
     }
-    const newComment = new commentSchema({
+    await comments.create({
       userId,
       nickname,
       comment,
       createdAt,
       updatedAt
     });
-    await newComment.save();
+
     res.json({ message: "댓글을 생성하였습니다." });
   } catch (err) {
     res.status(400).json({ errorMessage: '서버 에러' });
@@ -47,24 +46,31 @@ router.post('/posts/:_postId/comments', authMiddleware, async (req, res) => {
 });
 
 // 댓글 수정 API
-router.put('/posts/:_postId/comments/:_commentId', authMiddleware, async (req, res) => {
+router.put('/posts/:postId/comments/:commentId', authMiddleware, async (req, res) => {
   try {
     const { comment } = req.body;
-    const comments = await commentSchema.findById(req.params._commentId);
+    const { commentId } = req.params;
     const { userId } = res.locals.user;
+
+    const Comment = await comments.findOne({ where: { commentId } });
 
     if (!comment) {
       return res.status(400).json({ message: '댓글 내용을 입력해주세요' });
     }
 
-    if (!comments) {
+    if (!Comment) {
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
     }
 
     if (userId === comments.userId) {
-      comments.comment = comment;
-
-      await comments.save();
+      await comments.update(
+        { comment },
+        {
+          where: {
+            [Op.and]: [{ commentId }, { userId }],
+          }
+        }
+      );
       res.json({ message: '댓글을 수정하였습니다.' });
     } else {
       res.status(403).json({ errorMessage: "댓글 수정 권한이 없습니다." });
@@ -75,17 +81,25 @@ router.put('/posts/:_postId/comments/:_commentId', authMiddleware, async (req, r
 });
 
 // 댓글 삭제 API
-router.delete('/posts/:_postId/comments/:_commentId', authMiddleware, async (req, res) => {
+router.delete('/posts/:postId/comments/:commentId', authMiddleware, async (req, res) => {
   try {
-    const comments = await commentSchema.findById(req.params._commentId);
+    const { commentId } = req.params;
     const { userId } = res.locals.user;
 
-    if (!comments) {
+    const Comment = await comments.findOne({ where: { commentId }});
+
+    if (!Comment) {
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
     }
 
-    if (userId === comments.userId) {
-      await commentSchema.deleteOne({ commentId: comments._commentId });
+    if (userId === Comment.userId) {
+      
+      await comments.destroy({
+        where: {
+          [Op.and]: [{ commentId }, { userId }],
+        }
+      });
+
       res.json({ message: '댓글을 삭제하였습니다.' });
     } else {
       res.status(401).json({ error: "댓글 삭제 권한이 없습니다." });
