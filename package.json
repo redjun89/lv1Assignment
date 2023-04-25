@@ -15,7 +15,12 @@
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.4",
-    "nodemon": "^2.0.22"
+    "mysql2": "^3.2.3",
+    "sequelize": "^6.31.0"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "sequelize-cli": "^6.6.0"
+  }
 }
