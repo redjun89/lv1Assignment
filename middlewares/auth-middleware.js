@@ -1,12 +1,12 @@
 // middlewares/auth-middleware.js
 
 const jwt = require("jsonwebtoken");
-const User = require("../schemas/signup");
+const { users } = require("../models");
 
 // 사용자 인증 미들웨어
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
-  const [authType, authToken] = (Authorization ?? "").split(" ");
+  const [authType, authToken] = Authorization.split(" ");
 
   if (!authToken || authType !== "Bearer") {
     res.status(403).send({
@@ -16,8 +16,15 @@ module.exports = async (req, res, next) => {
   }
 
   try {
-    const { userId } = jwt.verify(authToken, "customized-secret-key");
-    const user = await User.findById(userId);
+    const decodedToken = jwt.verify(authToken, "customized-secret-key");
+    const userId = decodedToken.userId;
+    console.log(userId);
+
+    const user = await users.findOne({ where: { userId } });
+    if (!user) {
+      return res.status(401).json({ "message": "토큰에 해당하는 사용자가 존재하지 않습니다." })
+    }
+
     res.locals.user = user;
     next();
   } catch (err) {

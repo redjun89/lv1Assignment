@@ -8,7 +8,7 @@ const { Op } = require("sequelize");
 // 전체 게시글 목록 조회 API
 router.get("/posts", async (req, res) => {
   const Posts = await posts.findAll({
-    attributes: [ postId, userId, nickname, title, createdAt, updatedAt ],
+    attributes: ['postId', 'userId', 'nickname', 'title', 'createdAt', 'updatedAt'],
     order: [['createdAt', 'DESC']]
   });
 
@@ -53,10 +53,10 @@ router.post("/posts", authMiddleware, async (req, res) => {
 // 게시글 상세 조회 API
 router.get("/posts/:postId", async (req, res) => {
   try {
-    const {postId} = req.params;
+    const { postId } = req.params;
     const post = await posts.findOne({
       attributes: ['postId', 'userId', 'nickname', 'title', 'content', 'createdAt', 'updatedAt'],
-      where: {postId}
+      where: { postId }
     })
 
     if (!req.params.postId || !postId) {
@@ -81,21 +81,19 @@ router.put("/posts/:postId", authMiddleware, async (req, res) => {
 
     if (!post) {
       return res.status(412).json({ message: '게시글 조회에 실패하였습니다.' });
+    } else if (userId !== post.userId) {
+      return res.status(403).json({ errorMessage: "게시글 수정 권한이 없습니다." });
     }
 
-    if (userId === posts.userId) {
-      await posts.update(
-        { title, content }, // title과 content 컬럼을 수정합니다.
-        {
-          where: {
-            [Op.and]: [{ postId }, { userId }],
-          }
+    await posts.update(
+      { title, content }, // title과 content 컬럼을 수정합니다.
+      {
+        where: {
+          [Op.and]: [{ postId }, { userId: userId }],
         }
-      );
-      res.status(200).json({ message: '게시글 수정이 완료되었습니다.' });
-    } else {
-      res.status(403).json({ errorMessage: "게시글 수정 권한이 없습니다." });
-    }
+      }
+    );
+    return res.status(200).json({ message: '게시글 수정이 완료되었습니다.' });
   } catch (error) {
     console.error(error);
     res.status(400).json({ errorMessage: '게시글 수정에 실패하였습니다.' });

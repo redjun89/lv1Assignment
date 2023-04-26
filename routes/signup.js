@@ -39,29 +39,21 @@ router.post("/signup", async (req, res) => {
 
     // nickname이 동일한 데이터가 있는지 확인하기 위해 가져온다.
     const existsUsers = await users.findOne({
-      where: {
-        nickname: nickname
-      }
+      where: { nickname: nickname }
     });
     if (existsUsers) {
       // NOTE: 보안을 위해 인증 메세지는 자세히 설명하지 않습니다.
-      res.status(412).json({
-        errorMessage: "중복된 닉네임입니다.",
-      });
+      res.status(412).json({ errorMessage: "중복된 닉네임입니다." });
       return;
-    };
+    }
 
     await users.create({ nickname, password });
-
-    res.status(201).json({
-      message: "회원가입에 성공하였습니다."
-    });
-  } catch (err) {
+    res.status(201).json({ message: "회원가입에 성공하였습니다." });
+  } catch (error) {
     res.status(400).json({
-      message: "요청한 데이터 형식이 올바르지 않습니다."
+      errorMessage: "요청한 데이터 형식이 올바르지 않습니다."
     })
   }
 });
-
 
 module.exports = router;

@@ -8,7 +8,7 @@ const { Op } = require("sequelize");
 router.get('/posts/:postId/comments', async (req, res) => {
   try {
     const Comments = await comments.findAll({
-      attributes: [ commentId, userId, nickname, comment, createdAt, updatedAt ],
+      attributes: ['commentId', 'userId', 'nickname', 'comment', 'createdAt', 'updatedAt'],
       order: [['createdAt', 'DESC']]
     });
 
@@ -22,6 +22,7 @@ router.get('/posts/:postId/comments', async (req, res) => {
 router.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
   try {
     const { comment, createdAt, updatedAt } = req.body;
+    const { postId } = req.params;
     const { userId, nickname } = res.locals.user;
 
     if (!comment) {
@@ -32,8 +33,9 @@ router.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
       return res.status(402).json({ message: '게시물 조회에 실패하였습니다.' });
     }
     await comments.create({
-      userId,
-      nickname,
+      userId: userId,
+      postId: postId,
+      nickname: nickname,
       comment,
       createdAt,
       updatedAt
@@ -60,21 +62,21 @@ router.put('/posts/:postId/comments/:commentId', authMiddleware, async (req, res
 
     if (!Comment) {
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
+    } else if (userId !== comments.userId) {
+      return res.status(403).json({ errorMessage: "댓글 수정 권한이 없습니다." });
     }
 
-    if (userId === comments.userId) {
-      await comments.update(
-        { comment },
-        {
-          where: {
-            [Op.and]: [{ commentId }, { userId }],
-          }
+
+    await comments.update(
+      { comment },
+      {
+        where: {
+          [Op.and]: [{ commentId }, { userId }],
         }
-      );
-      res.json({ message: '댓글을 수정하였습니다.' });
-    } else {
-      res.status(403).json({ errorMessage: "댓글 수정 권한이 없습니다." });
-    }
+      }
+    );
+
+    return res.json({ message: '댓글을 수정하였습니다.' });
   } catch (err) {
     res.status(400).json({ errorMessage: '서버 에러' });
   }
@@ -86,14 +88,14 @@ router.delete('/posts/:postId/comments/:commentId', authMiddleware, async (req, 
     const { commentId } = req.params;
     const { userId } = res.locals.user;
 
-    const Comment = await comments.findOne({ where: { commentId }});
+    const Comment = await comments.findOne({ where: { commentId } });
 
     if (!Comment) {
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
     }
 
     if (userId === Comment.userId) {
-      
+
       await comments.destroy({
         where: {
           [Op.and]: [{ commentId }, { userId }],

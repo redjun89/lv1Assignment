@@ -18,6 +18,16 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      createdAt: {
+        allowNull: false, // NOT NULL
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn("now")
+      },
+      updatedAt: {
+        allowNull: false, // NOT NULL
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn("now")
+      }
     });
   },
   async down(queryInterface, Sequelize) {

@@ -1,10 +1,15 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const routes = require("./routes/index.js");
-const connect = require("./schemas");
 const app = express();
 const port = 3000;
-connect();
+
+// const { sequelize } = require("./models/index.js");
+// async function main() {
+//   // sequelize에 테이블들이 존재하지 않는 경우 태이블을 생성합니다.
+//   await sequelize.sync();
+// }
+// main();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
