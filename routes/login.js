@@ -11,7 +11,7 @@ router.post("/login", async (req, res) => {
   try {
     const { nickname, password } = req.body;
 
-    const user = await users.findOne({ nickname, password });
+    const user = await users.findOne({ where: { nickname } });
 
     // NOTE: 인증 메세지는 자세히 설명하지 않는것을 원칙으로 한다.
     if (!user || password !== user.password) {
@@ -24,7 +24,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       { userId: user.userId },  // token의 payload에 저장
       "customized-secret-key",
-      {expiresIn: "1h"}
+      {expiresIn: "1h"} // 토큰 만료 시간 1시간 설정
     );
     
     res.cookie(
