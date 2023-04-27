@@ -14,17 +14,20 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.users, { // 2. Users 모델에게 N:1 관계 설정을 합니다.
         targetKey: 'userId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'userId', // 4. Comments 모델의 UserId 컬럼과 연결합니다.
+        onDelete: 'CASCADE',
       });
 
       this.belongsTo(models.users, { // 2. Users 모델에게 N:1 관계 설정을 합니다.
         targetKey: 'nickname', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'nickname', // 4. Comments 모델의 UserId 컬럼과 연결합니다.
+        onDelete: 'CASCADE',
       });
 
       // 1. Comments 모델에서
       this.belongsTo(models.posts, { // 2. Posts 모델에게 N:1 관계 설정을 합니다.
         targetKey: 'postId', // 3. Posts 모델의 postId 컬럼을
         foreignKey: 'postId', // 4. Comments 모델의 PostId 컬럼과 연결합니다.
+        onDelete: 'CASCADE',
       });
     }
   }
