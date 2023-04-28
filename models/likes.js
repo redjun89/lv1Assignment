@@ -11,13 +11,13 @@ module.exports = (sequelize, DataTypes) => {
 
       this.belongsTo(models.users, {
         targetKey: 'userId',
-        foreignKey: 'UserId',
+        foreignKey: 'userId',
         onDelete: 'CASCADE',
       });
 
       this.belongsTo(models.posts, {
         targetKey: 'postId',
-        foreignKey: 'PostId',
+        foreignKey: 'postId',
         onDelete: 'CASCADE',
       });
 
@@ -31,11 +31,11 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true, // Primary Key (기본키)
       type: DataTypes.INTEGER,
     },
-    PostId: {
+    postId: {
       allowNull: false, // NOT NULL
       type: DataTypes.INTEGER,
     },
-    UserId: {
+    userId: {
       allowNull: false, // NOT NULL
       type: DataTypes.INTEGER,
     },
