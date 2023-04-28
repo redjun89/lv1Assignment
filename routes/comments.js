@@ -62,7 +62,7 @@ router.put('/posts/:postId/comments/:commentId', authMiddleware, async (req, res
 
     if (!Comment) {
       return res.status(404).json({ message: '댓글 조회에 실패하였습니다.' });
-    } else if (userId !== comments.userId) {
+    } else if (userId !== Comment.userId) {
       return res.status(403).json({ errorMessage: "댓글 수정 권한이 없습니다." });
     }
 
@@ -71,7 +71,7 @@ router.put('/posts/:postId/comments/:commentId', authMiddleware, async (req, res
       { comment },
       {
         where: {
-          [Op.and]: [{ commentId }, { userId }],
+          [Op.and]: [{ commentId }, { userId: userId }],
         }
       }
     );
