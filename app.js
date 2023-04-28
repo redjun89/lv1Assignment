@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const bodyParser = require('body-parser');
 const routes = require("./routes/index.js");
 const app = express();
 const port = 3000;
@@ -11,6 +12,7 @@ const port = 3000;
 // }
 // main();
 
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
