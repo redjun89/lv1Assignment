@@ -10,13 +10,13 @@ router.put("/posts/:postId/like", authMiddleware, async (req, res) => {
         const { postId } = req.params;
         const { userId } = res.locals.user;
 
-        // const isExistPost = await posts.findByPK(postId);  // posts모델에서 Primary Key를 이용하여 검색 
+        const isExistPost = await posts.findByPk(postId);  // posts모델에서 Primary Key를 이용하여 검색 
 
-        // if (!isExistPost) {
-        //     return res.status(404).json({
-        //         errorMessage: '게시글이 존재하지 않습니다.',
-        //     });
-        // }
+        if (!isExistPost) {
+            return res.status(404).json({
+                errorMessage: '게시글이 존재하지 않습니다.',
+            });
+        }
 
         let likely = await likes.findOne({
             where: {
@@ -93,8 +93,7 @@ router.get('/posts/post/like', authMiddleware, async (req, res) => {
             group: ['posts.postId'],
             order: [['likes', 'DESC']],
             raw: true,
-        })
-        // .then((likes) => parseLikePostsModel(likes));
+        }).then((likes) => parseLikePostsModel(likes));
 
         return res.status(200).json({
             data: Posts
