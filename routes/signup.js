@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/signup", async (req, res) => {
   try {
     const { nickname, password, confirm } = req.body;
-    const nickPattern = new RegExp('^[a-zA-Z0-9]{3,}$');
+    const nickPattern = new RegExp('^[a-zA-Z0-9]{3, 12}$');
 
     if (!nickPattern.test(nickname)) {
       res.status(412).json({
@@ -29,7 +29,7 @@ router.post("/signup", async (req, res) => {
       return;
     }
 
-    const passwordPattern = new RegExp(`^[^${nickname}]{4,}$`);
+    const passwordPattern = new RegExp(`^[^${nickname}]{4, 13}$`);
     if (!passwordPattern.test(password)) {
       res.status(412).json({
         errorMessage: "패스워드에 닉네임이 포함되어 있습니다."
