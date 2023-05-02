@@ -5,6 +5,12 @@ const authMiddleware = require("../middlewares/auth-middleware");
 const { posts, likes, sequelize } = require("../models");
 const { Op } = require("sequelize");
 
+const PostsController = require('../controllers/posts.controller');
+const postsController = new PostsController();
+
+router.get('/', postsController.getPosts);
+router.post('/', postsController.createPost);
+
 // 전체 게시글 목록 조회 API
 router.get("/posts", async (req, res) => {
   const Posts = await posts.findAll({

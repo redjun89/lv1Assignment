@@ -1,15 +1,16 @@
-// routes/index.js
-
 const express = require("express");
 const router = express.Router();
 
-const signup = require("./signup");
-const login = require("./login");
-const posts = require("./posts");
-const comments = require("./comments");
-const likes = require("./likes");
+const signupRouter = require("./signup.routes");
+const loginRouter = require("./login.routes");
+const postsRouter = require("./posts.routes");
+const commentsRouter = require("./comments.routes");
+const likesRouter = require("./likes.routes");
 
-
-router.use("/", [signup, login, posts, comments, likes]);
+router.use("/signup", signupRouter);
+router.use("/login", loginRouter);
+router.use("/posts", postsRouter);
+router.use("/comments", commentsRouter);
+router.use("/likes", likesRouter);
 
 module.exports = router;
