@@ -1,10 +1,10 @@
-const SignupRepository = require('../repositories/signup.repository');
+const SignupRepository = require('../repositories/signup.repository.js');
 
 class SignupService {
   signupRepository = new SignupRepository();
 
   signup = async (nickname, password, confirm) => {
-    const nickPattern = new RegExp('^[a-zA-Z0-9]{3, 12}$');
+    const nickPattern = new RegExp('^[a-zA-Z0-9]{3,12}$');
   
     if (!nickPattern.test(nickname)) {
       throw new Error('닉네임의 형식이 일치하지 않습니다.');
@@ -18,17 +18,17 @@ class SignupService {
       throw new Error('패스워드 형식이 올바르지 않습니다.');
     }
   
-    const passwordPattern = new RegExp(`^[^${nickname}]{4, 13}$`);
+    const passwordPattern = new RegExp(`^[^${nickname}]{4,13}$`);
     if (!passwordPattern.test(password)) {
       throw new Error('패스워드에 닉네임이 포함되어 있습니다.');
     }
   
-    const existsUsers = await userRepository.findUserByNickname(nickname);
-    if (existsUsers) {
+    const existsUsers = await this.signupRepository.findUserByNickname(nickname);
+    if (existsUsers !== null) {
       throw new Error('중복된 닉네임입니다.');
     }
   
-    await userRepository.createUser({ nickname, password });
+    await this.signupRepository.createUser({ nickname, password });
     return '회원가입에 성공하였습니다.';
   };
 };

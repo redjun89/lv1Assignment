@@ -5,6 +5,6 @@ const router = express.Router();
 const SignupController = require('../controllers/signup.controller');
 const signupController = new SignupController();
 
-router.post('/signup', signupController.postSignup); // 회원가입
+router.post('/', signupController.postSignup); // 회원가입
 
 module.exports = router;
