@@ -1,6 +1,6 @@
-const { Posts } = require('../models');
+const { Comments } = require('../models/comments.js');
 
-class PostRepository {
+class CommentRepository {
   findAllPost = async () => {
     const posts = await Posts.findAll();
 
@@ -40,4 +40,4 @@ class PostRepository {
   };
 }
 
-module.exports = PostRepository;
+module.exports = CommentRepository;

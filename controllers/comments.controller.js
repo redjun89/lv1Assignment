@@ -1,4 +1,4 @@
-const CommentsService = require('../services/comments.service');
+const CommentService = require('../services/comments.service');
 
 class CommentsController {
   commentService = new CommentService();
@@ -22,7 +22,7 @@ class CommentsController {
     res.status(201).json({ data: createPostData });
   };
 
-  updatePost = async (req, res, next) => {
+  updateComment = async (req, res, next) => {
     const { postId } = req.params;
     const { password, title, content } = req.body;
 
@@ -36,7 +36,7 @@ class CommentsController {
     res.status(200).json({ data: updatePost });
   };
 
-  deletePost = async (req, res, next) => {
+  deleteComment = async (req, res, next) => {
     const { postId } = req.params;
     const { password } = req.body;
 
@@ -46,4 +46,4 @@ class CommentsController {
   };
 }
 
-module.exports = PostsController;
+module.exports = CommentsController;

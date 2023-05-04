@@ -1,7 +1,7 @@
-const PostRepository = require('../repositories/posts.repository');
+const CommentRepository = require('../repositories/comments.repository');
 
-class PostService {
-  postRepository = new PostRepository();
+class CommentService {
+  commentRepository = new CommentRepository();
 
   findAllPost = async () => {
     const allPost = await this.postRepository.findAllPost();
@@ -87,4 +87,4 @@ class PostService {
   };
 }
 
-module.exports = PostService;
+module.exports = CommentService;

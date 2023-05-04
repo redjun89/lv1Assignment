@@ -1,4 +1,4 @@
-const { Posts } = require('../models');
+const { Posts } = require('../models/posts.js');
 
 class PostRepository {
   findAllPost = async () => {
