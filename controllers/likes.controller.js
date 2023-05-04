@@ -1,32 +1,22 @@
 const LikeService = require('../services/likes.service');
+const PostService = require('../services/posts.service');
 
 class LikesController {
     likeService = new LikeService();
+    postService = new PostService();
 
     updateLike = async (req, res, next) => {
         try {
             const { postId } = req.params;
+            console.log(postId);
             const { userId } = res.locals.user;
+            console.log(userId);
 
-            const isExistPost = await posts.findByPk(postId);
+            const post = await this.postService.findPostById(postId);
+            console.log(post);
+            const result = await this.likeService.updateLike(postId, userId);
 
-            if (!isExistPost) {
-                return res.status(404).json({
-                    errorMessage: '게시글이 존재하지 않습니다.',
-                });
-            }
-
-            const result = await likeService.updateLikes(postId, userId);
-
-            if (result.liked) {
-                return res
-                    .status(200)
-                    .json({ message: '게시글의 좋아요를 등록하였습니다.' });
-            } else {
-                return res
-                    .status(200)
-                    .json({ message: '게시글의 좋아요를 취소하였습니다.' });
-            }
+            res.status(200).json({ message: result });
         } catch (err) {
             console.error(`${req.method} ${req.originalUrl} : ${err.message}`);
             return res.status(400).json({
@@ -38,7 +28,7 @@ class LikesController {
     getLike = async (req, res, next) => {
         try {
             const { userId } = res.locals.user;
-            const Posts = await likeService.getLikedPosts(userId);
+            const Posts = await this.likeService.getLikedPosts(userId);
             return res.status(200).json({
                 data: Posts
             });

@@ -11,6 +11,6 @@ router.use("/signup", signupRouter);
 router.use("/login", loginRouter);
 router.use("/posts", postsRouter);
 router.use("/posts/:postId", commentsRouter);
-router.use("/posts/likes", likesRouter);
+router.use("/posts/like", likesRouter);
 
 module.exports = router;

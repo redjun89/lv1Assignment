@@ -24,6 +24,10 @@ class PostService {
   findPostById = async (postId) => {
     const findPost = await this.postRepository.findPostById(postId);
 
+    if (!findPost) {
+      throw new Error("게시글 조회에 실패하였습니다.");
+    };
+
     return {
       title: findPost.title,
       nickname: findPost.nickname,
