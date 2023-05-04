@@ -33,16 +33,20 @@ class PostService {
     };
   };
 
-  createPost = async (nickname, password, title, content) => {
+  createPost = async (
+    userId, nickname, title, content, createdAt, updatedAt
+  ) => {
     const createPostData = await this.postRepository.createPost(
+      userId,
       nickname,
-      password,
       title,
-      content
+      content,
+      createdAt,
+      updatedAt
     );
 
     return {
-      postId: createPostData.null,
+      postId: createPostData.postId,
       nickname: createPostData.nickname,
       title: createPostData.title,
       content: createPostData.content,
@@ -51,11 +55,18 @@ class PostService {
     };
   };
 
-  updatePost = async (postId, password, title, content) => {
+  updatePost = async (postId, userId, title, content) => {
     const findPost = await this.postRepository.findPostById(postId);
-    if (!findPost) throw new Error("Post doesn't exist");
 
-    await this.postRepository.updatePost(postId, password, title, content);
+    if (!findPost) {
+      throw new Error("게시글 조회에 실패하였습니다.");
+    };
+
+    if (userId !== findPost.userId) {
+      throw new Error("게시글 수정 권한이 없습니다.");
+    };
+
+    await this.postRepository.updatePost(postId, title, content);
 
     const updatePost = await this.postRepository.findPostById(postId);
 
@@ -69,20 +80,19 @@ class PostService {
     };
   };
 
-  deletePost = async (postId, password) => {
+  deletePost = async (postId, userId) => {
     const findPost = await this.postRepository.findPostById(postId);
-    if (!findPost) throw new Error("Post doesn't exist");
-
-    await this.postRepository.deletePost(postId, password);
-
-    return {
-      postId: findPost.postId,
-      nickname: findPost.nickname,
-      title: findPost.title,
-      content: findPost.content,
-      createdAt: findPost.createdAt,
-      updatedAt: findPost.updatedAt,
+    if (!findPost) {
+      throw new Error("게시글을 찾을 수 없습니다.");
     };
+
+    if (userId !== findPost.userId) {
+      throw new Error("게시글 삭제 권한이 없습니다.");
+    }
+
+    await this.postRepository.deletePost(postId, userId);
+
+    return;
   };
 }
 
