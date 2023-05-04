@@ -1,7 +1,6 @@
-//userRepository.js
 const { users } = require('../models');
 
-class UserRepository {
+class SignupRepository {
   async createUser(data) {
     return users.create(data);
   }
@@ -13,4 +12,4 @@ class UserRepository {
   }
 }
 
-module.exports = UserRepository;
+module.exports = SignupRepository;

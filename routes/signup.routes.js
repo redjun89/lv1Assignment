@@ -1,9 +1,10 @@
 //routes.js
 const express = require('express');
-const { signUpController } = require('../controllers/signupController');
-
 const router = express.Router();
 
-router.post('/signup', signUpController);
+const SignupController = require('../controllers/signup.controller');
+const signupController = new SignupController();
+
+router.post('/signup', signupController.postSignup); // 회원가입
 
 module.exports = router;

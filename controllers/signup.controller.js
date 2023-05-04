@@ -1,14 +1,17 @@
-//signupController.js
-const { signUp } = require('../services/userService');
+const SignupService = require('../services/signup.service');
 
-const signUpController = async (req, res) => {
-  try {
-    const { nickname, password, confirm } = req.body;
-    const result = await signUp(nickname, password, confirm);
-    res.status(201).json({ message: result });
-  } catch (error) {
-    res.status(400).json({ errorMessage: error.message });
-  }
-};
+class SignupController {
+  signupService = new SignupService();
 
-module.exports = { signUpController };
+  postSignup = async (req, res, next) => {
+    try {
+      const { nickname, password, confirm } = req.body;
+      const result = await signup(nickname, password, confirm);
+      res.status(201).json({ message: result });
+    } catch (error) {
+      res.status(400).json({ errorMessage: error.message });
+    }
+  };
+}
+
+module.exports = SignupController;
