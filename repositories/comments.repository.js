@@ -1,40 +1,54 @@
-const { Comments } = require('../models/comments.js');
+const { comments } = require('../models');
 
 class CommentRepository {
-  findAllPost = async () => {
-    const posts = await Posts.findAll();
-
-    return posts;
-  };
-
-  findPostById = async (postId) => {
-    const post = await Posts.findByPk(postId);
-
-    return post;
-  };
-
-  createPost = async (nickname, password, title, content) => {
-    const createPostData = await Posts.create({
-      nickname,
-      password,
-      title,
-      content,
+  findcomments = async (postId) => {
+    console.log(postId);
+    const Comments = await comments.findAll({
+      where: { postId: postId },
+      order: [["createdAt", "DESC"]],
     });
 
-    return createPostData;
+    return Comments;
   };
 
-  updatePost = async (postId, password, title, content) => {
-    const updatePostData = await Posts.update(
-      { title, content },
-      { where: { postId, password } }
+  findcommentById = async (commentId) => {
+    const Comment = await comments.findOne({
+			where: { commentId },
+		});
+		return Comment;
+  };
+
+  createComment = async (
+    postId,
+    userId,
+    nickname,
+    comment,
+    createdAt,
+    updatedAt,
+  ) => {
+    const createCommentData = await comments.create({
+      postId,
+      userId,
+      nickname,
+      comment,
+      createdAt,
+      updatedAt,
+    });
+
+    return createCommentData;
+  };
+
+  updateComment = async (userId, commentId, comment) => {
+    const updateCommentData = await comments.update(
+      { comment },
+      { where: { commentId, userId } }
     );
 
-    return updatePostData;
+    return updateCommentData;
   };
 
-  deletePost = async (postId, password) => {
-    const updatePostData = await Posts.destroy({ where: { postId, password } });
+  deleteComment = async (commentId) => {
+    const updatePostData = await comments.destroy({ where: { commentId } });
 
     return updatePostData;
   };

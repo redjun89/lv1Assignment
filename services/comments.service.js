@@ -1,89 +1,93 @@
 const CommentRepository = require('../repositories/comments.repository');
+const PostRepository = require("../repositories/posts.repository");
 
 class CommentService {
   commentRepository = new CommentRepository();
+  postRepository = new PostRepository();
 
-  findAllPost = async () => {
-    const allPost = await this.postRepository.findAllPost();
+  findcomments = async (postId) => {
+    console.log(postId);
+    const findcomment = await this.commentRepository.findcomments(postId);
 
-    allPost.sort((a, b) => {
-      return b.createdAt - a.createdAt;
-    });
-
-    return allPost.map((post) => {
+    return findcomment.map((comment) => {
       return {
-        postId: post.postId,
-        nickname: post.nickname,
-        title: post.title,
-        createdAt: post.createdAt,
-        updatedAt: post.updatedAt,
+        commentId: comment.commentId,
+        nickname: comment.nickname,
+        title: comment.title,
+        comment: comment.comment,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
       };
     });
   };
 
-  findPostById = async (postId) => {
-    const findPost = await this.postRepository.findPostById(postId);
-
-    return {
-      postId: findPost.postId,
-      nickname: findPost.nickname,
-      title: findPost.title,
-      content: findPost.content,
-      createdAt: findPost.createdAt,
-      updatedAt: findPost.updatedAt,
-    };
-  };
-
-  createPost = async (nickname, password, title, content) => {
-    const createPostData = await this.postRepository.createPost(
+  createComment = async (
+    postId,
+    userId,
+    nickname,
+    comment,
+    createdAt,
+    updatedAt,
+  ) => {
+    const createCommentData = await this.commentRepository.createComment(
+      postId,
+      userId,
       nickname,
-      password,
-      title,
-      content
+      comment,
+      createdAt,
+      updatedAt,
     );
 
     return {
-      postId: createPostData.null,
-      nickname: createPostData.nickname,
-      title: createPostData.title,
-      content: createPostData.content,
-      createdAt: createPostData.createdAt,
-      updatedAt: createPostData.updatedAt,
+      postId: createCommentData.postId,
+      userId: createCommentData.userId,
+      nickname: createCommentData.nickname,
+      comment: createCommentData.comment,
+      createdAt: createCommentData.createdAt,
+      updatedAt: createCommentData.updatedAt,
     };
   };
 
-  updatePost = async (postId, password, title, content) => {
-    const findPost = await this.postRepository.findPostById(postId);
-    if (!findPost) throw new Error("Post doesn't exist");
+  updateComment = async (userId, commentId, comment) => {
+    const findComment = await this.commentRepository.findcommentById(commentId);
+    if (!findComment) {
+      throw new Error("댓글을 찾지 못했습니다.");
+    }
 
-    await this.postRepository.updatePost(postId, password, title, content);
-
-    const updatePost = await this.postRepository.findPostById(postId);
-
-    return {
-      postId: updatePost.postId,
-      nickname: updatePost.nickname,
-      title: updatePost.title,
-      content: updatePost.content,
-      createdAt: updatePost.createdAt,
-      updatedAt: updatePost.updatedAt,
+    if (userId !== findComment.userId) {
+      throw new Error("댓글 수정 권한이 없습니다.");
     };
+
+    if (userId === findComment.userId) {
+      await this.commentRepository.updateComment(userId, commentId, comment);
+
+      const updateComment = await this.commentRepository.findcommentById(commentId);
+
+      return {
+        postId: updateComment.postId,
+        nickname: updateComment.nickname,
+        comment: updateComment.comment,
+        createdAt: updateComment.createdAt,
+        updatedAt: updateComment.updatedAt,
+      };
+    }
   };
 
-  deletePost = async (postId, password) => {
-    const findPost = await this.postRepository.findPostById(postId);
-    if (!findPost) throw new Error("Post doesn't exist");
+  deleteComment = async (commentId, userId) => {
+    const findComment = await this.commentRepository.findcommentById(commentId);
+    if (!findComment) {
+      throw new Error("댓글을 찾지 못했습니다.");
+    }
 
-    await this.postRepository.deletePost(postId, password);
-
-    return {
-      postId: findPost.postId,
-      nickname: findPost.nickname,
-      title: findPost.title,
-      content: findPost.content,
-      createdAt: findPost.createdAt,
-      updatedAt: findPost.updatedAt,
+    if (userId !== findComment.userId) {
+      throw new Error("댓글 삭제 권한이 없습니다.");
     };
+
+    if (userId === findComment.userId) {
+      await this.commentRepository.deleteComment(commentId);
+
+      return;
+    }
   };
 }
 
