@@ -1,53 +1,101 @@
-// middlewares/auth-middleware.js
-
 const jwt = require("jsonwebtoken");
 const { users } = require("../models");
+const { RedisClientRepository } = require("../repositories/login.repository");
 
 // 사용자 인증 미들웨어
 module.exports = async (req, res, next) => {
-  try {
-    // const { Authorization } = req.cookies;
-    // const [authType, authToken] = Authorization.split(" ");
+	const accessToken = req.cookies.accessToken;
+	const refreshToken = req.cookies.refreshToken;
+	let newAccessToken = null;
 
-        // if (!authToken || authType !== "Bearer") {
-    //   res.status(403).send({
-    //     errorMessage: "로그인이 필요한 기능입니다.",
-    //   });
-    //   return;
-    // }
+	const [authAccessType, authAccessToken] = (accessToken ?? "").split(" ");
+	const [authRefreshType, authRefreshToken] = (refreshToken ?? "").split(" ");
 
-    // const decodedToken = jwt.verify(authToken, "customized-secret-key");
-    // const userId = decodedToken.userId;
+	if (authAccessType !== "Bearer" || !authAccessToken) {
+		console.error("Refresh Token이 존재하지 않습니다.");
+		res.clearCookie('accessToken'); 
+		return res.status(403).json({
+			errorMessage: "로그인이 필요한 기능입니다.",
+		});
+	}
 
-    // const user = await users.findOne({ where: { userId } });
-    // if (!user) {
-    //   return res.status(401).json({ "message": "토큰에 해당하는 사용자가 존재하지 않습니다." })
-    // }
-    const cookies = req.cookies['Authorization']
+	if (authRefreshType !== "Bearer" || !authRefreshToken) {
+		console.error("Access Token이 존재하지 않습니다.");
+		res.clearCookie('refreshToken'); 
+		return res.status(403).json({
+			errorMessage: "로그인이 필요한 기능입니다.",
+		});
+	}
 
-    if(!cookies) {
-      return res.status(403).send({
-        errorMessage: "로그인이 필요한 기능입니다."
-      });
-    }
+	const isAccessTokenValid = validateAccessToken(authAccessToken);
+	const isRefreshTokenValid = validateRefreshToken(authRefreshToken);
 
-    const [tokenType, tokenValue] = cookies.split(' ');
-    if (tokenType !== 'Bearer') {
-      res.clearCookie('Authorization'); // 인증에 실패하였을 경우 Cookie를 삭제합니다.
-      return res.status(403).send({
-        errorMessage: '전달된 쿠키에서 오류가 발생하였습니다.',
-      });
-    }
+	try {
+		const redisClient = new RedisClientRepository();
 
-    const { userId } = jwt.verify(tokenValue, 'customized-secret-key');
-    const user = await users.findByPk(userId);
+		if (!isRefreshTokenValid) {
+			await redisClient.deleteRefreshToken(authRefreshToken);
+			return res.status(419).json({ message: "Refresh Token이 만료되었습니다." });
+		}
 
-    res.locals.user = user;
-    next();
-  } catch (err) {
-    console.error(err);
-    res.status(403).send({
-      errorMessage: "쿠키에서 오류가 발생했습니다.",
-    });
-  }
+		if (!isAccessTokenValid) {
+			const accessTokenId = await redisClient.getRefreshToken(authRefreshToken);
+			console.log(accessTokenId);
+			if (!accessTokenId)
+				return res.status(419).json({
+					message: "Refresh Token의 정보가 서버에 존재하지 않습니다.",
+				});
+
+			newAccessToken = createAccessToken(accessTokenId);
+			res.cookie("accessToken", `Bearer ${newAccessToken}`);
+		}
+		const { userId } = getAccessTokenPayload(newAccessToken ?? authAccessToken);
+
+		const user = await users.findOne({ where: { userId } });
+		res.locals.user = user;
+
+		next();
+	} catch (error) {
+		console.error(error);
+		res.clearCookie('accessToken'); 
+		res.clearCookie('refreshToken'); 
+		return res.status(403).json({
+			// 쿠키가 비정상적이거나 만료된 경우
+			errorMessage: "전달된 쿠키에서 오류가 발생하였습니다.",
+		});
+	}
 };
+
+function createAccessToken(userId) {
+	const accessToken = jwt.sign({ userId }, process.env.SECRET_KEY, {
+		expiresIn: "2h",
+	});
+	return accessToken;
+}
+
+function validateAccessToken(accessToken) {
+	try {
+		jwt.verify(accessToken, process.env.SECRET_KEY);
+		return true;
+	} catch (error) {
+		return false;
+	}
+}
+
+function validateRefreshToken(refreshToken) {
+	try {
+		jwt.verify(refreshToken, process.env.SECRET_KEY);
+		return true;
+	} catch (error) {
+		return false;
+	}
+}
+
+function getAccessTokenPayload(accessToken) {
+	try {
+		const payload = jwt.verify(accessToken, process.env.SECRET_KEY);
+		return payload;
+	} catch (error) {
+		return null;
+	}
+}
